@@ -30,8 +30,8 @@ resource "aws_security_group" "alb_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow HTTPS from anywhere"
+    cidr_blocks = ["10.0.12.0/24","10.0.11.0/24"]
+    description = "Allow HTTPS from web tier"
   }
 
   egress {
@@ -75,10 +75,11 @@ resource "aws_security_group" "ec2_sg" {
 # Application Load Balancer
 resource "aws_lb" "cis_alb" {
   name               = "app-alb"
-  internal           = false
+  internal           = true
   load_balancer_type = "application"
   subnets            = var.subnet_ids
   security_groups    = [aws_security_group.alb_sg.id]
+  
 }
 
 # Launch Template using CIS AMI
