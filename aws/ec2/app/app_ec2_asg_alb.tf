@@ -1,4 +1,3 @@
-
 # CIS Amazon Linux AMI
 data "aws_ami" "cis_amazon_linux" {
   most_recent = true
@@ -188,3 +187,9 @@ resource "aws_autoscaling_attachment" "asg_to_tg" {
 #  resource_arn = aws_lb.cis_alb.arn
 #  web_acl_arn  = var.waf_web_acl_arn  # Must be passed as a variable
 #}
+
+
+resource "aws_wafv2_web_acl_association" "alb_waf_attachment" {
+  resource_arn = aws_lb.cis_alb.arn
+  web_acl_arn  = "arn:aws:wafv2:us-east-2:717279727434:regional/webacl/app-waf-acl/2ed14a59-7350-4018-a09f-ae2cf92aa755"
+}
