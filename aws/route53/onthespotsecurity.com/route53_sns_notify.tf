@@ -35,5 +35,5 @@ resource "aws_cloudwatch_event_target" "send_to_sns" {
 
 resource "aws_cloudwatch_log_group" "eventbridge_logs" {
   name              = "/aws/events/route53"
-  retention_in_days = 30
+  retention_in_days = 90
 }
