@@ -161,6 +161,7 @@ resource "aws_lb_target_group" "cis_tg" {
 }
 
 
+
 # HTTPS Listener for ALB
 # this should be https but need valid acm cert first
 resource "aws_lb_listener" "http_listener" {
