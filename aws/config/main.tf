@@ -2,6 +2,12 @@ provider "aws" {
   region = var.region
 }
 
+provider "aws" {
+  alias  = "useast2"
+  region = "us-east-2"
+}
+
+
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "config_bucket" {
@@ -111,9 +117,41 @@ resource "aws_config_configuration_aggregator" "org_aggregator" {
 }
 
 
+resource "aws_config_configuration_recorder" "recorder_useast2" {
+  provider = aws.useast2
+  name     = "org-config-recorder"
+  role_arn = aws_iam_role.config_role.arn
+
+  recording_group {
+    all_supported                 = true
+    include_global_resource_types = true
+  }
+}
+
+resource "aws_config_delivery_channel" "delivery_channel_useast2" {
+  provider       = aws.useast2
+  name           = "default"
+  s3_bucket_name = aws_s3_bucket.config_bucket.bucket
+  depends_on     = [aws_config_configuration_recorder.recorder_useast2]
+}
+
+resource "aws_config_configuration_recorder_status" "recorder_status_useast2" {
+  provider   = aws.useast2
+  name       = aws_config_configuration_recorder.recorder_useast2.name
+  is_enabled = true
+  depends_on = [aws_config_delivery_channel.delivery_channel_useast2]
+}
+
+
 resource "aws_config_conformance_pack" "pci_pack" {
   name                = "PCI-DSS"
   delivery_s3_bucket  = aws_s3_bucket.config_bucket.bucket
   template_s3_uri     = "s3://${aws_s3_bucket.config_bucket.bucket}/templates/pci.yaml"
 }
 
+resource "aws_config_conformance_pack" "pci_pack_useast2" {
+  provider            = aws.useast2
+  name                = "PCI-DSS-USEAST2"
+  delivery_s3_bucket  = aws_s3_bucket.config_bucket.bucket
+  template_s3_uri     = "s3://${aws_s3_bucket.config_bucket.bucket}/templates/pci.yaml"
+}
