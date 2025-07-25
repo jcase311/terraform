@@ -22,3 +22,4 @@ terraform.rc
 
 # .auto.tfvars if you use it locally only
 *.auto.tfvars
+aws/.terraform.lock.hcl
